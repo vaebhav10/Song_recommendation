@@ -38,21 +38,22 @@ def get_similar_song(song_name = None, artist_name = None, Explicit = True):
         song_ind = df[res].index[0]
         query_mat = merged[song_ind]
     
-    score = np.argsort(query_mat.reshape(1,-1)@ merged.T).flatten()[::-1]
+    matching_indexes = np.argsort(query_mat.reshape(1,-1)@ merged.T).flatten()[::-1]
     
-    for i in score:
+    for index in matching_indexes:
         if not Explicit :
-            if df.iloc[i]['explicit']:
+            if df.iloc[index]['explicit']:
                 continue
-        sng = df.iloc[i]['track_name']
+        sng = df.iloc[index]['track_name']
+        
         if sng == track: # skipping the querry song
             continue
         
-        art = df.iloc[i]['artists'] 
-        link = df.iloc[i]['track_id']
+        art = df.iloc[index]['artists'] 
+        link = df.iloc[index]['track_id']
         link = f"https://open.spotify.com/track/{link}?autoplay_ok=1"
-        if ((sng,art)) not in result:
-            result.append((link, sng, art))
+        
+        result.append((link, sng, art))
         if len(result)==10:
             break
     
